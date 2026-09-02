@@ -252,6 +252,112 @@
     --success-foreground: var(--color-emerald-700);
 }
 
+.anime-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.anime-kicker::before,
+.tide-divider-star {
+    content: "";
+    display: block;
+    width: 0.8rem;
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #ee79aa, #a46bd8 56%, #55b8ce);
+    clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+}
+
+.anime-kicker::after {
+    content: "";
+    width: 0.3rem;
+    aspect-ratio: 1;
+    rotate: 45deg;
+    border-radius: 1px;
+    background: #65c5d5;
+    box-shadow: 0 0 0 3px rgb(101 197 213 / 12%);
+}
+
+.anime-bow-tag {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.25rem;
+    padding-inline: 0.6rem;
+    border-radius: 0.35rem;
+    background: linear-gradient(135deg, rgb(101 197 213 / 16%), rgb(164 107 216 / 12%));
+    color: #79608d;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.anime-bow-tag::before,
+.anime-bow-tag::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 0.35rem;
+    height: 0.55rem;
+    translate: 0 -50%;
+    background: rgb(101 197 213 / 28%);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.anime-bow-tag::before {
+    right: 100%;
+}
+
+.anime-bow-tag::after {
+    left: 100%;
+    scale: -1 1;
+}
+
+.anime-feature-card {
+    transition-property: transform, box-shadow;
+    transition-duration: 180ms;
+    transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+.anime-feature-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 1px rgb(164 107 216 / 10%), 0 14px 32px rgb(82 60 110 / 9%);
+}
+
+.tide-divider {
+    position: absolute;
+    inset-inline: 0;
+    bottom: -1px;
+    height: 4.5rem;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.tide-divider svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: #d37fb5;
+    stroke-width: 1.25;
+    opacity: 0.38;
+}
+
+.tide-divider svg path:first-child {
+    stroke: #d37fb5;
+}
+
+.tide-divider svg path:last-child {
+    stroke: #71becd;
+    opacity: 0.58;
+}
+
+.tide-divider-star {
+    position: absolute;
+    right: 14%;
+    top: 1.35rem;
+    width: 1rem;
+    filter: drop-shadow(0 3px 8px rgb(164 107 216 / 24%));
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -274,5 +380,8 @@
   .landing *, .landing *::before, .landing *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+  .anime-feature-card:hover {
+    transform: none;
   }
 }

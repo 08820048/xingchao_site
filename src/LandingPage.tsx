@@ -18,8 +18,11 @@ import {
   Sparkles,
   UserRoundCheck,
 } from "lucide-react";
+import type { ReactNode } from "react";
 
 import character from "@/assets/brand/xingchao-anime-character-full.jpg";
+import characterThinking from "@/assets/character/xingchao-thinking-full.webp";
+import characterWelcome from "@/assets/character/xingchao-welcome-full.webp";
 import {
   Accordion,
   AccordionItem,
@@ -202,6 +205,22 @@ function Brand() {
   );
 }
 
+function AnimeKicker({ children }: { children: ReactNode }) {
+  return <div className="anime-kicker">{children}</div>;
+}
+
+function TideDivider() {
+  return (
+    <div className="tide-divider" aria-hidden="true">
+      <svg viewBox="0 0 1440 72" preserveAspectRatio="none">
+        <path d="M-20 50C190 5 330 10 520 39s350 31 520 1 292-34 420-13" />
+        <path d="M-20 63c203-31 369-24 542 4s333 19 499-8 303-35 459-13" />
+      </svg>
+      <span className="tide-divider-star" />
+    </div>
+  );
+}
+
 function ArchitectureDiagram() {
   return (
     <div className="flex flex-wrap items-stretch gap-2">
@@ -354,51 +373,46 @@ export default function LandingPage() {
               </dl>
             </div>
 
-            <div className="relative mx-auto w-full max-w-[650px] lg:mr-[-3rem]">
-              <div className="absolute -inset-4 -z-10 rotate-3 rounded-[3.5rem] bg-gradient-to-br from-rose-200/70 via-violet-200/50 to-cyan-100/70 blur-sm" />
-              <div className="relative overflow-hidden rounded-[2.75rem] border border-white/80 bg-white p-2 shadow-[0_30px_90px_rgba(101,74,130,.18)]">
-                <img
-                  src={character}
-                  width={1254}
-                  height={1254}
-                  alt="星潮的粉紫长卷发二次元女性角色"
-                  fetchPriority="high"
-                  className="aspect-square w-full rounded-[2.3rem] object-cover"
-                />
-                <div className="absolute inset-x-8 bottom-8 rounded-2xl border border-white/65 bg-white/78 p-4 shadow-lg backdrop-blur-xl sm:inset-x-auto sm:right-8 sm:w-72">
-                  <div className="flex items-start gap-3">
-                    <span className="size-10 shrink-0 overflow-hidden rounded-full border-2 border-white shadow-md">
-                      <img src={character} alt="" className="size-full scale-150 object-cover object-center" />
-                    </span>
-                    <div>
-                      <p className="text-xs font-semibold text-[#43364f]">星潮正在听</p>
-                      <p className="mt-1 text-xs leading-5 text-[#82748d]">@我，或者轻声说一句“星潮”。</p>
-                    </div>
-                  </div>
-                </div>
+            <div className="relative mx-auto flex min-h-[590px] w-full max-w-[620px] items-end justify-center lg:mr-[-2rem] lg:min-h-[720px]">
+              <img
+                src={characterWelcome}
+                width={940}
+                height={1672}
+                alt="星潮挥手欢迎，身穿白蓝配色的全身制服"
+                fetchPriority="high"
+                className="relative z-10 max-h-[650px] w-auto max-w-full object-contain drop-shadow-[0_24px_28px_rgba(70,45,100,.22)] lg:max-h-[720px]"
+              />
+              <div className="absolute right-0 top-32 z-20 hidden rounded-2xl bg-white/85 px-4 py-3 shadow-[0_0_0_1px_rgba(0,0,0,.05),0_10px_30px_rgba(82,60,110,.12)] backdrop-blur-xl sm:block">
+                <p className="flex items-center gap-2 text-xs font-semibold text-[#43364f]"><Sparkles className="size-3.5 text-[#a46bd8]" /> 只在被需要时出现</p>
+                <p className="mt-1 text-[11px] text-[#82748d]">@她，或者轻声说一句“星潮”</p>
+              </div>
+              <div className="absolute bottom-16 left-0 z-20 rounded-2xl bg-white/88 px-4 py-3 shadow-[0_0_0_1px_rgba(0,0,0,.05),0_10px_30px_rgba(82,60,110,.12)] backdrop-blur-xl">
+                <p className="flex items-center gap-2 text-xs font-semibold text-[#43364f]"><ShieldCheck className="size-3.5 text-[#58aebd]" /> 白名单已启用</p>
+                <p className="mt-1 text-[11px] text-[#82748d]">默认拒绝，按需开放</p>
               </div>
             </div>
           </div>
+          <TideDivider />
         </section>
 
         <div className="bg-background text-foreground">
           <section id="features" className="scroll-mt-24 border-t px-5 py-20 sm:px-8 lg:py-24">
             <div className="mx-auto max-w-7xl">
               <div className="max-w-2xl">
-                <Badge variant="outline">核心能力</Badge>
+                <AnimeKicker><Badge variant="outline">核心能力</Badge></AnimeKicker>
                 <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">群聊里常用的事，集中处理。</h2>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">回复、群务、AI 与统计使用同一套配置，每个模块、每个群都可以独立开关。</p>
               </div>
               <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {features.map(({ icon: Icon, eyebrow, title, description, tags }) => (
-                  <Card key={title} className="h-full">
+                  <Card key={title} className="anime-feature-card h-full">
                     <CardHeader>
                       <CardTitle>{title}</CardTitle>
                       <CardDescription className="leading-6">{description}</CardDescription>
                       <CardAction><Icon className="size-4 text-muted-foreground" /></CardAction>
                     </CardHeader>
                     <CardFooter className="flex-wrap gap-1.5">
-                      <Badge variant="secondary">{eyebrow}</Badge>
+                      <span className="anime-bow-tag">{eyebrow}</span>
                       {tags.map((tag) => (
                         <span key={tag} className="text-xs text-muted-foreground">{tag}</span>
                       ))}
@@ -412,7 +426,7 @@ export default function LandingPage() {
           <section id="demo" className="scroll-mt-24 px-5 pb-20 sm:px-8 lg:pb-24">
             <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">
               <div className="max-w-xl">
-                <Badge variant="outline">上手演示</Badge>
+                <AnimeKicker><Badge variant="outline">上手演示</Badge></AnimeKicker>
                 <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">像聊天一样下指令。</h2>
                 <p className="mt-4 text-sm leading-7 text-muted-foreground">
                   不用记复杂语法：以 <code className="rounded bg-muted px-1.5 py-0.5 text-xs">/</code> 开头是指令，
@@ -432,7 +446,7 @@ export default function LandingPage() {
           <section id="safety" className="scroll-mt-24 border-y bg-muted/40 px-5 py-20 sm:px-8 lg:py-24">
             <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.8fr_1.2fr] lg:items-center">
               <div className="max-w-xl">
-                <Badge variant="success"><ShieldCheck /> 安全默认</Badge>
+                <AnimeKicker><Badge variant="success"><ShieldCheck /> 安全默认</Badge></AnimeKicker>
                 <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">默认拒绝，再按需开放。</h2>
                 <p className="mt-4 text-sm leading-7 text-muted-foreground">空白名单不会处理任何群。面板、NapCat WebUI 与机器人端口默认只对本机开放，敏感操作仅允许授权账号执行。</p>
               </div>
@@ -462,7 +476,7 @@ export default function LandingPage() {
             <div className="mx-auto max-w-5xl">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <Badge variant="outline">自托管部署</Badge>
+                  <AnimeKicker><Badge variant="outline">自托管部署</Badge></AnimeKicker>
                   <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">四步启动星潮。</h2>
                   <p className="mt-3 text-sm text-muted-foreground">Docker Compose 同时运行 NoneBot2 与 NapCat，数据全部留在本机。</p>
                 </div>
@@ -507,12 +521,18 @@ export default function LandingPage() {
             </div>
           </section>
 
-          <section id="faq" className="scroll-mt-24 border-y bg-muted/40 px-5 py-20 sm:px-8 lg:py-24">
-            <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[.7fr_1.3fr]">
-              <div>
-                <Badge variant="outline">常见问题</Badge>
-                <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">开始之前</h2>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">能力范围、数据去向、部署要求与使用风险。</p>
+          <section id="faq" className="scroll-mt-24 border-y px-5 py-20 sm:px-8 lg:py-24">
+            <h2 className="sr-only">常见问题</h2>
+            <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[.72fr_1.28fr] lg:items-stretch">
+              <div className="flex min-h-[420px] items-end justify-center lg:min-h-[500px]">
+                <img
+                  src={characterThinking}
+                  width={805}
+                  height={1953}
+                  alt="星潮正在思考常见问题"
+                  loading="lazy"
+                  className="max-h-[420px] w-auto max-w-full object-contain drop-shadow-[0_18px_24px_rgba(70,45,100,.18)] lg:max-h-[500px]"
+                />
               </div>
               <Card>
                 <CardPanel className="py-0">
