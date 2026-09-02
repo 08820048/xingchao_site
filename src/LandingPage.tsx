@@ -29,6 +29,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { JOIN_GROUP_URL, JoinGroupExperience } from "@/components/JoinGroupExperience";
+import { ProjectUpdates } from "@/components/ProjectUpdates";
 import {
   Card,
   CardAction,
@@ -287,6 +288,7 @@ export default function LandingPage() {
           <span className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
           <nav className="hidden items-center gap-1 md:flex" aria-label="主导航">
             <a className="rounded-full bg-secondary px-3 py-1.5 text-xs font-medium text-foreground" href="#features" aria-current="location">能力</a>
+            <a className="rounded-full px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground" href="#updates">更新</a>
             <a className="rounded-full px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground" href="#demo">演示</a>
             <a className="rounded-full px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground" href="#safety">边界</a>
             <a className="rounded-full px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground" href="#deploy">部署</a>
@@ -407,6 +409,8 @@ export default function LandingPage() {
               </div>
             </div>
           </section>
+
+          <ProjectUpdates />
 
           <section id="demo" className="scroll-mt-24 px-5 pb-20 sm:px-8 lg:pb-24">
             <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">

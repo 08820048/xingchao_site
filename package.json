@@ -5,6 +5,7 @@
   "description": "星潮 Xingchao 官网（xingchao.dev）",
   "type": "module",
   "scripts": {
+    "check:updates": "node --experimental-strip-types scripts/check-github-updates.ts",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
