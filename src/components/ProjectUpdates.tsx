@@ -3,7 +3,6 @@ import { ArrowUpRight, GitCommitHorizontal } from "lucide-react";
 
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { parseGitHubCommits, projectUpdates, type ProjectUpdate, type UpdateKind } from "@/lib/github-updates";
 
 const commitsUrl = "https://github.com/08820048/xingchao/commits/main";
@@ -24,32 +23,31 @@ const kinds: Record<UpdateKind, { label: string; variant: BadgeProps["variant"] 
   update: { label: "更新", variant: "warning" },
 };
 
-function UpdateCard({ update }: { update: ProjectUpdate }) {
+function UpdateRow({ update }: { update: ProjectUpdate }) {
   const category = kinds[update.kind];
 
   return (
-    <a
-      href={update.url}
-      target="_blank"
-      rel="noreferrer"
-      className="group rounded-2xl outline-none transition-transform duration-150 ease-out hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-    >
-      <Card className="h-full transition-[box-shadow] duration-150 ease-out group-hover:shadow-md">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Badge variant={category.variant}>{category.label}</Badge>
-            <time className="tabular-nums text-xs text-muted-foreground" dateTime={update.date}>
-              {dateFormatter.format(new Date(update.date))}
-            </time>
-          </div>
-          <CardTitle className="text-pretty text-base leading-6">{update.title}</CardTitle>
-        </CardHeader>
-        <CardFooter className="mt-auto justify-between pt-0 text-xs text-muted-foreground">
-          <code className="flex items-center gap-1.5"><GitCommitHorizontal className="size-3.5" />{update.sha}</code>
-          <span className="flex items-center gap-1 text-foreground">查看提交 <ArrowUpRight className="size-3.5" /></span>
-        </CardFooter>
-      </Card>
-    </a>
+    <li className="relative grid gap-3 border-b py-6 pl-7 sm:grid-cols-[8rem_1fr_auto] sm:items-start sm:gap-6 sm:pl-8">
+      <span className="absolute left-0 top-8 size-2.5 rounded-full bg-foreground ring-4 ring-background" aria-hidden="true" />
+      <time className="tabular-nums text-sm text-muted-foreground" dateTime={update.date}>
+        {dateFormatter.format(new Date(update.date))}
+      </time>
+      <div className="min-w-0">
+        <Badge variant={category.variant}>{category.label}</Badge>
+        <h2 className="mt-2 text-pretty text-base font-medium leading-7 sm:text-lg">{update.title}</h2>
+      </div>
+      <a
+        href={update.url}
+        target="_blank"
+        rel="noreferrer"
+        className="flex min-h-10 items-center gap-1.5 self-center rounded-md text-xs text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+        aria-label={`查看提交 ${update.sha}`}
+      >
+        <GitCommitHorizontal className="size-3.5" />
+        <code>{update.sha}</code>
+        <ArrowUpRight className="size-3.5" />
+      </a>
+    </li>
   );
 }
 
@@ -74,8 +72,8 @@ export function ProjectUpdates() {
   }, []);
 
   return (
-    <section id="updates" className="scroll-mt-24 border-y bg-muted/40 px-5 py-20 sm:px-8 lg:py-24">
-      <div className="mx-auto max-w-7xl">
+    <section id="updates" className="px-5 py-16 sm:px-8 lg:py-24">
+      <div className="mx-auto max-w-5xl">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-2xl">
             <Badge variant="outline">项目更新</Badge>
@@ -87,9 +85,9 @@ export function ProjectUpdates() {
           </Button>
         </div>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          {updates.map((update) => <UpdateCard key={update.sha} update={update} />)}
-        </div>
+        <ol className="relative mt-10 border-t before:absolute before:bottom-0 before:left-[4px] before:top-0 before:w-px before:bg-border">
+          {updates.map((update) => <UpdateRow key={update.sha} update={update} />)}
+        </ol>
       </div>
     </section>
   );
