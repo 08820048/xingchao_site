@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { JOIN_GROUP_URL, JoinGroupExperience } from "@/components/JoinGroupExperience";
 import {
   Card,
   CardAction,
@@ -291,9 +292,7 @@ export default function LandingPage() {
             <a className="rounded-full px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground" href="#deploy">部署</a>
             <a className="rounded-full px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground" href="#faq">问答</a>
           </nav>
-          <Button render={<a href="https://panel.xingchao.dev" />} size="sm" className="rounded-full px-3">
-            管理面板
-          </Button>
+          <JoinGroupExperience />
         </div>
       </header>
 
@@ -562,7 +561,7 @@ export default function LandingPage() {
                 <GitFork className="size-3.5" /> GitHub
               </a>
               <a className="hover:text-foreground" href={`${github}/blob/main/LICENSE`} target="_blank" rel="noreferrer">Apache-2.0 License</a>
-              <a className="hover:text-foreground" href="https://panel.xingchao.dev">管理面板</a>
+              <a className="hover:text-foreground" href={JOIN_GROUP_URL} target="_blank" rel="noreferrer">入群体验</a>
             </div>
           </div>
           <div className="mt-8 flex flex-wrap items-center gap-2 border-t pt-5 text-xs text-muted-foreground">
