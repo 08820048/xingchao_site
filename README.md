@@ -17,21 +17,14 @@ npm run preview  # 预览构建产物
 
 ## 部署（Cloudflare Pages）
 
-**方式一：Git 连接（推荐，push 自动部署）**
-
-1. Cloudflare Dashboard → Workers & Pages → Create → Pages → Connect to Git
-2. 选择本仓库，构建配置：
-   - 构建命令：`npm run build`
-   - 输出目录：`dist`
-   - 环境变量：`NODE_VERSION=22`（仓库已内置 `.nvmrc`，一般无需手动填）
-3. 部署后 Custom domains 绑定 `xingchao.dev`
-
-**方式二：Wrangler 手动部署**
+当前 `xingchao` Pages 项目使用 Direct Upload，不会随 Git push 自动部署：
 
 ```bash
 npm ci && npm run build
-npx wrangler pages deploy dist --project-name=xingchao
+npx wrangler pages deploy dist --project-name=xingchao --branch=main
 ```
+
+完整步骤与验证方式见 [DEPLOYMENT.md](DEPLOYMENT.md)。
 
 ## License
 
