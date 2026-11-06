@@ -177,7 +177,7 @@ export function JoinGroupExperience() {
     <>
       <button
         type="button"
-        className="inline-flex h-9 items-center rounded-full border border-line bg-ink/40 px-4 text-sm text-pearl backdrop-blur transition-[transform,border-color,background-color] duration-200 hover:border-tide/60 hover:bg-tide/10 active:scale-[0.96]"
+        className="btn-join"
         aria-haspopup="dialog"
         onClick={open}
       >

@@ -25,17 +25,17 @@ function UpdateRow({ update }: { update: ProjectUpdate }) {
   const category = kinds[update.kind];
 
   return (
-    <li className="index-row grid gap-x-8 gap-y-1.5 border-b border-line py-6 md:grid-cols-[9rem_6rem_1fr_auto] md:items-baseline">
-      <time className="font-mono text-xs tabular-nums text-mist" dateTime={update.date}>
+    <li className="grid gap-x-8 gap-y-1.5 border-b border-leaf/20 py-6 md:grid-cols-[9rem_6rem_1fr_auto] md:items-baseline">
+      <time className="font-mono text-xs tabular-nums text-leaf/60" dateTime={update.date}>
         {dateFormatter.format(new Date(update.date)).replaceAll("/", ".")}
       </time>
-      <span className={`font-mono text-xs ${category.accent ? "text-tide" : "text-mist"}`}>{category.label}</span>
-      <h2 className="index-name text-pretty font-serif text-lg font-semibold leading-8 tracking-tight">{update.title}</h2>
+      <span className={`font-mono text-xs ${category.accent ? "text-lantern" : "text-leaf/60"}`}>{category.label}</span>
+      <h2 className="text-pretty font-serif text-lg font-extrabold leading-8 tracking-tight">{update.title}</h2>
       <a
         href={update.url}
         target="_blank"
         rel="noreferrer"
-        className="link-sweep inline-flex w-fit items-center gap-1 font-mono text-xs text-mist hover:text-pearl"
+        className="link-sweep inline-flex w-fit items-center gap-1 font-mono text-xs text-leaf/60 hover:text-leaf"
         aria-label={`查看提交 ${update.sha}`}
       >
         {update.sha}
@@ -68,13 +68,13 @@ export function ProjectUpdates() {
   return (
     <section id="updates" className="pb-28 pt-20 lg:pt-32">
       <div className="shell">
-        <p className="label">更新</p>
-        <h1 className="display mt-6 text-[clamp(2.8rem,8vw,6.5rem)]">每一次变化，都有迹可循。</h1>
-        <p className="prose-quiet mt-6 max-w-xl text-base">
+        <p className="a-label">更新</p>
+        <h1 className="a-title mt-6 text-[clamp(2.6rem,7vw,5.5rem)]">每一次变化，都有迹可循。</h1>
+        <p className="a-body mt-6 max-w-xl text-base">
           直接读取 GitHub 上最近的提交，按新功能、修复与优化归类。
         </p>
 
-        <ol className="mt-16 border-t border-line">
+        <ol className="mt-16 border-t border-leaf">
           {updates.map((update) => <UpdateRow key={update.sha} update={update} />)}
         </ol>
 
