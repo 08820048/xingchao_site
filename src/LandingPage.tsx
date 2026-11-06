@@ -1,282 +1,444 @@
-import {
-  ArrowDown,
-  ArrowRight,
-  BarChart3,
-  Bot,
-  CalendarClock,
-  Check,
-  Database,
-  Filter,
-  GitFork,
-  HeartHandshake,
-  LayoutDashboard,
-  LockKeyhole,
-  MessageCircleHeart,
-  MessagesSquare,
-  ServerCog,
-  ShieldCheck,
-  Sparkles,
-  UserRoundCheck,
-} from "lucide-react";
-import type { ReactNode } from "react";
+import { ArrowRight, ArrowUpRight, Check, Copy } from "lucide-react";
+import { useState, type ReactNode } from "react";
 
-import character from "@/assets/brand/xingchao-anime-character-full.jpg";
-import characterThinking from "@/assets/character/xingchao-thinking-full.webp";
-import characterWelcome from "@/assets/character/xingchao-welcome-full.webp";
+import avatar from "@/assets/brand/avatar.webp";
+import { JoinGroupExperience } from "@/components/JoinGroupExperience";
+import { Mark } from "@/components/Mark";
+import { Reveal } from "@/components/Reveal";
+import { TideCanvas } from "@/components/TideCanvas";
 import {
   Accordion,
   AccordionItem,
   AccordionPanel,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { JOIN_GROUP_URL, JoinGroupExperience } from "@/components/JoinGroupExperience";
-import {
-  Card,
-  CardAction,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardPanel,
-  CardTitle,
-} from "@/components/ui/card";
 
 const github = "https://github.com/08820048/xingchao";
 
-const heroStats = [
-  { value: "15 个", label: "内置插件" },
-  { value: "20+", label: "群内指令" },
-  { value: "白名单", label: "安全默认" },
-  { value: "Apache-2.0", label: "开源协议" },
-];
+/* ------------------------------------------------------------------ 内容 */
 
-const features = [
+const principles = [
   {
-    icon: MessageCircleHeart,
-    eyebrow: "回应",
-    title: "被需要时，才轻轻出现",
-    description:
-      "指令、关键词、@ 唤起与昵称唤起多种触发方式，配合冷却机制避免刷屏。同群同词条默认 8 秒冷却，安静融入群聊。",
-    tags: ["精确 / 包含匹配", "词库热更新", "按群开关"],
+    title: "默认拒绝。",
+    text: "白名单为空时，星潮不处理任何一个群。你放行的群，她才开口；你停用的群，重启后依然安静。",
   },
   {
-    icon: UserRoundCheck,
-    eyebrow: "群务",
-    title: "琐碎群务，交给她处理",
-    description:
-      "新人进群欢迎、白名单运行时增删、加群申请 AI 审批，并为超管提供禁言、全体禁言、踢人与撤回等群管指令。",
-    tags: ["进群欢迎", "AI 审批", "群管指令"],
+    title: "被叫到才开口。",
+    text: "指令、关键词、@ 与昵称，四种叫法。同一个词 8 秒内不会重复回应，群里不会被刷屏。",
   },
   {
-    icon: Bot,
-    eyebrow: "AI",
-    title: "接一句「星潮」，她来回答",
-    description:
-      "@ 或昵称唤起即可对话 OpenAI 兼容大模型（智谱 GLM、DeepSeek 等）。每群保留多轮上下文，可查询群信息、活跃统计，甚至替你执行群管操作。",
-    tags: ["工具调用", "每日限额", "面板可配"],
-  },
-  {
-    icon: BarChart3,
-    eyebrow: "洞察",
-    title: "看见群聊真实的潮汐",
-    description:
-      "活跃统计、发言 Top5、昨日对比一目了然；白名单群全量 jsonl 日志落本地，面板在线查看，重要变化不遗漏。",
-    tags: ["发言排行", "jsonl 日志", "在线查看"],
-  },
-  {
-    icon: CalendarClock,
-    eyebrow: "自动化",
-    title: "定时提醒与关键词守护",
-    description:
-      "内置定时任务：到点自动向指定群发送提醒；敏感词过滤静默拦截违规内容；还能一键查询 GitHub 趋势榜单。",
-    tags: ["/task 定时", "敏感词过滤", "GitHub 趋势"],
-  },
-  {
-    icon: LayoutDashboard,
-    eyebrow: "面板",
-    title: "浏览器里管好一切",
-    description:
-      "Web 管理面板集中编辑词库、管理白名单、配置 AI 模型与限额、查看日志与统计；支持浅色、深色与跟随系统主题。",
-    tags: ["词库编辑", "AI 配置", "主题切换"],
+    title: "数据留在你这里。",
+    text: "日志、词库、统计都存在你自己的服务器。只有你开启 AI，被唤起的那一句才会发给你配置的模型。",
   },
 ];
 
-const demo = [
-  {
-    kind: "user" as const,
-    text: "/stats",
-  },
-  {
-    kind: "bot" as const,
-    text: "本群今日消息 1,284 条 · 42 人参与 · 发言 Top5：阿澈、小鹿、…（/stats yesterday 查看昨日）",
-  },
-  {
-    kind: "user" as const,
-    text: "/mute @闯祸的 30",
-  },
-  {
-    kind: "bot" as const,
-    text: "已禁言「闯祸的」30 分钟。",
-  },
-  {
-    kind: "user" as const,
-    text: "@星潮 帮我总结一下今天 GitHub 上有什么热门项目",
-  },
-  {
-    kind: "bot" as const,
-    text: "今天的趋势榜前三是 …（来自 /trending，也可以直接让我读给你听）",
-  },
-];
-
-const architecture = [
-  { icon: MessagesSquare, name: "QQ 群", note: "白名单内才会进入业务" },
-  { icon: ServerCog, name: "NapCatQQ", note: "Docker 小号登录 · OneBot v11" },
-  { icon: Bot, name: "星潮 Bot", note: "NoneBot2 · 15 个插件" },
-  { icon: Database, name: "本地数据", note: "SQLite · 词库 · jsonl 日志" },
-];
-
-const safetyPolicies = [
-  [LockKeyhole, "最小暴露", "管理能力不直接暴露到公网", "localhost only"],
-  [ServerCog, "本地优先", "SQLite、词库和日志由你保管", "local storage"],
-  [HeartHandshake, "超管分权", "敏感操作只允许授权账号", "superuser"],
-  [MessagesSquare, "按需回应", "模块与群级业务都可独立关闭", "group scoped"],
+const capabilities = [
+  ["关键词与指令", "精确或包含匹配，词库热更新，每个群可独立开关。", "/reply"],
+  ["AI 问答", "@ 或昵称唤起，保留多轮上下文，能查群信息、做统计、执行群管。接任意 OpenAI 兼容模型，如 GLM、DeepSeek。", "@星潮"],
+  ["敏感词与分级处罚", "命中后由 AI 结合语境复核，确认违规才处理。30 天内重复违规，禁言逐次加重，直至移出群聊。", "/敏感词"],
+  ["申诉", "被处罚的人直接私聊机器人说明理由，管理员在面板里通过或驳回。", "私聊"],
+  ["群管", "禁言、全体禁言、踢出、撤回；加群申请由 AI 审批；新人进群欢迎。", "/禁言"],
+  ["活跃统计", "发言量、参与人数、发言 Top5，与昨日对比。", "/stats"],
+  ["定时提醒", "到点向指定群发消息，支持 @全体与重复规则。", "/task"],
+  ["语音", "群聊用 QQ AI 语音回复，可随时换音色；收到语音也能转成文字。", "/音色"],
+  ["满员清理", "群满时发提醒，并按活跃度列出待清理成员，确认后才执行。", "/清理群员"],
+  ["管理面板", "在浏览器里管理词库、白名单、AI 模型与额度，查看日志与违规记录。", "/panel"],
 ] as const;
 
-const envExample = `# .env —— 只需填这几项就能跑起来
-XINGCHAO_SUPERUSERS=10000        # 超管 QQ 号
-XINGCHAO_GROUP_WHITELIST=123456  # 群白名单，留空则不处理任何群
+type Line =
+  | { who: "user"; name: string; time: string; text: string }
+  | { who: "bot"; text: string; note?: string }
+  | { who: "recalled"; name: string; time: string };
+
+const transcript: Line[] = [
+  { who: "user", name: "阿澈", time: "21:02", text: "/stats" },
+  { who: "bot", text: "本群今日 1,284 条消息，42 人参与。发言最多：阿澈、小鹿、老周。" },
+  { who: "recalled", name: "路人甲", time: "21:07" },
+  {
+    who: "bot",
+    text: "@路人甲 你因发送了敏感违禁词，消息已被撤回。",
+    note: "30 天内第 2 次违规 · 禁言 20 分钟",
+  },
+  { who: "user", name: "小鹿", time: "21:15", text: "@星潮 今天 GitHub 趋势榜有什么？" },
+  { who: "bot", text: "前三是 …（来自 /trending）。要我念给你听吗？" },
+  { who: "bot", text: "本群成员已满（500/500）。管理员将按活跃度清理长期不发言的成员。" },
+];
+
+const envExample = `# .env —— 只需这几项
+XINGCHAO_SUPERUSERS=10000        # 超管 QQ
+XINGCHAO_GROUP_WHITELIST=123456  # 群白名单
 ONEBOT_ACCESS_TOKEN=<16位以上随机串>
 XINGCHAO_PANEL_PASSWORD=<面板密码>
 
-# 可选：接入 AI（任何 OpenAI 兼容接口）
-XINGCHAO_AI_BASE_URL=https://open.bigmodel.cn/api/paas/v4
+# 可选：AI（OpenAI 兼容接口）
+XINGCHAO_AI_BASE_URL=https://api.deepseek.com
 XINGCHAO_AI_API_KEY=sk-...`;
 
-const deploySteps = [
-  ["01", "填写环境变量", "配置超管、群白名单与强随机访问令牌。"],
-  ["02", "启动两个容器", "运行 docker compose up -d。"],
-  ["03", "扫码并连接", "用 QQ 小号登录 NapCat，配置反向 WebSocket。"],
-  ["04", "验证连通", "白名单群里发一句 /ping，收到 pong 即完成。"],
+const steps = [
+  ["填写环境变量", "超管、群白名单、访问令牌。"],
+  ["启动容器", "docker compose up -d，同时拉起 NoneBot2 与 NapCat。"],
+  ["扫码并连接", "用 QQ 小号登录 NapCat，配置反向 WebSocket。"],
+  ["验证", "白名单群里发一句 /ping，收到 pong 即完成。"],
 ];
 
 const faqs = [
   {
     q: "星潮会回复群里的每一条消息吗？",
-    a: "不会。她默认只响应指令、关键词、@ 唤起和昵称唤起；AI 问答也可以独立关闭。冷却机制会抑制重复触发。",
+    a: "不会。她默认只响应指令、关键词、@ 和昵称；AI 问答也可以单独关闭。冷却机制会抑制重复触发。",
   },
   {
     q: "可以只让机器人服务指定群吗？",
-    a: "可以。星潮采用安全优先的白名单机制：空白名单不会处理任何群；你也可以在运行时单独停用某个群，且重启后依然保留。",
+    a: "可以，这是默认行为。空白名单不会处理任何群；你也可以在运行时单独停用某个群，重启后依然保留。",
   },
   {
-    q: "AI 功能支持哪些模型服务？",
-    a: "任何 OpenAI 兼容接口都可以，例如智谱 GLM、DeepSeek 等。在面板「AI」页填入接口地址与密钥，还能一键获取模型列表、设置每群 / 每人每日调用上限。",
+    q: "违规处罚是怎么算的？会不会误伤？",
+    a: "词库命中只是候选，默认再交给 AI 结合语境复核，确认违规才处理。同一个人在同一群 30 天内：第 1 次撤回，第 2 次禁言翻倍，第 3 次禁言 30 天，第 4 次起移出群聊。AI 复核不可用时的兜底撤回不计入次数，申诉通过的记录也不再计数。面板里能看到每个词的命中与放行情况，便于清理过宽的词。",
   },
   {
-    q: "聊天数据会发送到第三方吗？",
-    a: "日志、配置和统计默认保存在你自己的服务器。只有主动启用 AI 功能时，被唤起的问题才会发送到你配置的模型服务，且每日有调用上限护栏。",
+    q: "被误判了怎么办？",
+    a: "被处罚的人直接私聊机器人说明理由即可，7 天内有效，不需要记指令，群临时会话也能用。管理员在面板「违规记录」里通过或驳回，通过会解除禁言。",
   },
   {
-    q: "部署需要什么样的服务器？",
-    a: "一台 1 核 1G 以上的 Linux 服务器即可，用 Docker Compose 一键拉起 bot 与 NapCat 两个容器。部署文档覆盖全新安装、旧服务器迁移与 Cloudflare 公网部署。",
+    q: "AI 功能支持哪些模型？数据会发给第三方吗？",
+    a: "任何 OpenAI 兼容接口都行，如智谱 GLM、DeepSeek，在面板「AI」页填地址、密钥和模型即可，还能设置每群、每人的每日上限。只有你开启 AI 时，被唤起的那一句才会发给你配置的服务；日志、配置和统计始终留在本机。",
   },
   {
-    q: "如何更新到新版本？",
-    a: "在仓库目录执行 git pull && docker compose up -d --build 即可。词库、白名单、统计等数据都在 SQLite 与本地文件中，更新不会丢失。",
+    q: "怎么更新到新版本？",
+    a: "在仓库目录执行 git pull && docker compose up -d --build。词库、白名单、统计都在 SQLite 与本地文件里，更新不会丢失。每次发版后，机器人会在群里发一条更新公告，群里发 /更新日志 也能随时查看。",
   },
   {
     q: "使用 NapCat 登录 QQ 安全吗？",
-    a: "NapCat 使用非官方协议，存在账号风控与封禁风险。请使用小号，不要与电脑 QQ 同时登录，并避免把管理端口暴露到公网。",
+    a: "NapCat 使用非官方协议，存在账号风控与封禁风险。请使用小号，不要与电脑 QQ 同时登录，也不要把管理端口暴露到公网。星潮与腾讯官方开放平台无关。",
   },
 ];
 
-function Brand() {
-  return (
-    <a href="/" className="group flex items-center gap-2.5" aria-label="星潮首页">
-      <span className="size-9 overflow-hidden rounded-full border-2 border-white shadow-md transition-transform group-hover:scale-105">
-        <img src={character} alt="" className="size-full scale-150 object-cover object-center" />
-      </span>
-      <span className="leading-none">
-        <span className="block text-[17px] font-semibold tracking-tight text-[#2d2540]">星潮</span>
-        <span className="mt-1 block text-[9px] font-semibold tracking-[.22em] text-[#9a8bac]">XINGCHAO</span>
-      </span>
-    </a>
-  );
-}
+/* ------------------------------------------------------------------ 组件 */
 
-function AnimeKicker({ children }: { children: ReactNode }) {
-  return <div className="anime-kicker">{children}</div>;
-}
-
-function TideDivider() {
+function SectionHead({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="tide-divider" aria-hidden="true">
-      <svg viewBox="0 0 1440 72" preserveAspectRatio="none">
-        <path d="M-20 50C190 5 330 10 520 39s350 31 520 1 292-34 420-13" />
-        <path d="M-20 63c203-31 369-24 542 4s333 19 499-8 303-35 459-13" />
-      </svg>
-      <span className="tide-divider-star" />
+    <div className="grid gap-6 lg:grid-cols-[14rem_1fr] lg:gap-12">
+      <p className="label pt-3">{label}</p>
+      <h2 className="section-title max-w-3xl text-[clamp(2rem,4.4vw,3.5rem)]">{children}</h2>
     </div>
   );
 }
 
-function ArchitectureDiagram() {
+function Nav() {
+  const links = [
+    ["能力", "#capabilities"],
+    ["对话", "#talk"],
+    ["部署", "#deploy"],
+    ["问答", "#faq"],
+    ["更新", "/updates"],
+  ];
   return (
-    <div className="flex flex-wrap items-stretch gap-2">
-      {architecture.map(({ icon: Icon, name, note }, i) => (
-        <div key={name} className="contents">
-          <div className="flex min-w-[9.5rem] flex-1 flex-col gap-1 rounded-xl border bg-background px-3.5 py-3">
-            <span className="flex items-center gap-2 text-sm font-medium">
-              <Icon className="size-4 text-muted-foreground" /> {name}
-            </span>
-            <span className="text-xs text-muted-foreground">{note}</span>
-          </div>
-          {i < architecture.length - 1 && (
-            <span className="flex items-center text-muted-foreground" aria-hidden="true">
-              <ArrowDown className="size-4 rotate-[-90deg]" />
-            </span>
-          )}
-        </div>
-      ))}
-    </div>
+    <header className="fixed inset-x-0 top-0 z-50">
+      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-6 sm:px-10">
+        <a href="/" aria-label="星潮首页" className="group flex items-center gap-2.5 text-pearl">
+          <Mark className="size-6 text-tide transition-transform duration-500 group-hover:rotate-[18deg]" />
+          <span className="font-serif text-lg font-semibold tracking-tight">星潮</span>
+        </a>
+        <nav aria-label="主导航" className="hidden items-center gap-8 md:flex">
+          {links.map(([name, href]) => (
+            <a key={name} href={href} className="link-sweep text-sm text-mist transition-colors hover:text-pearl">
+              {name}
+            </a>
+          ))}
+        </nav>
+        <JoinGroupExperience />
+      </div>
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-ink via-ink/70 to-transparent" />
+    </header>
   );
 }
 
-function ChatDemo() {
+function Hero() {
   return (
-    <Card>
-      <CardHeader className="border-b">
-        <CardTitle>群聊实况</CardTitle>
-        <CardDescription>指令、群管与 AI 唤起，都像普通聊天一样自然。</CardDescription>
-        <CardAction><Badge variant="secondary">演示</Badge></CardAction>
-      </CardHeader>
-      <CardPanel className="flex flex-col gap-3">
-        {demo.map((m, i) => (
-          <div key={i} className={`flex ${m.kind === "user" ? "justify-end" : "justify-start"}`}>
-            <div className="flex max-w-[85%] items-start gap-2.5">
-              {m.kind === "bot" && (
-                <span className="mt-0.5 size-8 shrink-0 overflow-hidden rounded-full border-2 border-white shadow-sm">
-                  <img src={character} alt="" className="size-full scale-150 object-cover object-center" />
-                </span>
-              )}
-              <p
-                className={
-                  m.kind === "user"
-                    ? "rounded-2xl rounded-br-sm bg-gradient-to-br from-[#eb75a8] to-[#a46bd8] px-3.5 py-2 text-sm leading-6 text-white shadow-sm"
-                    : "rounded-2xl rounded-bl-sm border bg-background px-3.5 py-2 text-sm leading-6 shadow-sm"
-                }
-              >
-                {m.text}
-              </p>
-            </div>
-          </div>
-        ))}
-        <p className="flex items-center gap-1.5 pt-1 text-xs text-muted-foreground">
-          <Filter className="size-3.5" /> 非白名单群的消息不会进入任何业务逻辑，直接忽略。
+    <section className="relative isolate flex min-h-[86svh] flex-col justify-end overflow-hidden sm:min-h-[100svh]">
+      <TideCanvas
+        variant="hero"
+        className="absolute inset-0 -z-10 size-full [mask-image:linear-gradient(to_bottom,transparent,#000_26%,#000_92%,transparent)]"
+      />
+      <div className="mx-auto w-full max-w-[1200px] px-6 pb-24 pt-36 sm:px-10 sm:pb-28">
+        <p className="label mb-8 sm:mb-10">Xingchao · 开源 · 自托管 · Apache-2.0</p>
+        <h1 className="display text-[clamp(3.2rem,9.4vw,8.6rem)]">
+          群聊有潮汐，
+          <br />
+          她懂分寸。
+        </h1>
+        <p className="prose-quiet mt-8 max-w-2xl text-base sm:text-lg">
+          星潮只服务你放行的群，只在被叫到时开口。回复、群管、统计与 AI 问答，装进一个由你自己部署的机器人里。
         </p>
-      </CardPanel>
-    </Card>
+        <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <a
+            href={`${github}#快速开始`}
+            target="_blank"
+            rel="noreferrer"
+            className="group inline-flex h-12 items-center gap-2 rounded-full bg-pearl px-6 text-[15px] font-medium text-ink transition-[transform,background-color] duration-200 hover:bg-white active:scale-[0.97]"
+          >
+            开始部署
+            <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+          </a>
+          <a
+            href={github}
+            target="_blank"
+            rel="noreferrer"
+            className="link-sweep inline-flex items-center gap-1.5 text-[15px] text-pearl"
+          >
+            查看源码 <ArrowUpRight className="size-4" />
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Principles() {
+  return (
+    <section className="border-t border-line py-28 lg:py-40">
+      <div className="shell">
+        <SectionHead label="分寸">她知道什么时候不说话。</SectionHead>
+        <div className="mt-16 divide-y divide-line border-y border-line lg:ml-[calc(14rem+3rem)]">
+          {principles.map((p, i) => (
+            <Reveal key={p.title} delay={i * 90} className="grid gap-4 py-10 md:grid-cols-[1.1fr_1fr] md:items-baseline md:gap-10">
+              <h3 className="font-serif text-[clamp(1.75rem,3.2vw,2.6rem)] font-semibold tracking-tight">{p.title}</h3>
+              <p className="prose-quiet text-[15px]">{p.text}</p>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Capabilities() {
+  return (
+    <section id="capabilities" className="scroll-mt-16 border-t border-line py-28 lg:py-40">
+      <div className="shell">
+        <SectionHead label="能力">群里要做的事，都在这张目录里。</SectionHead>
+        <p className="mt-4 font-mono text-xs text-mist lg:ml-[calc(14rem+3rem)]">15 个插件 · 20+ 指令 · 每个模块、每个群都可以独立开关</p>
+        <ul className="mt-16 border-t border-line lg:ml-[calc(14rem+3rem)]">
+          {capabilities.map(([name, text, cmd]) => (
+            <li key={name} className="index-row grid gap-x-8 gap-y-2 border-b border-line py-6 pl-0 md:grid-cols-[12rem_1fr_auto] md:items-baseline md:py-7">
+              <h3 className="index-name font-serif text-xl font-semibold tracking-tight">{name}</h3>
+              <p className="text-[15px] leading-7 text-mist">{text}</p>
+              <code className="text-xs text-tide md:text-right">{cmd}</code>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+function Message({ line, index }: { line: Line; index: number }) {
+  if (line.who === "user") {
+    return (
+      <Reveal delay={index * 40} className="flex flex-col items-end gap-1.5">
+        <span className="font-mono text-[11px] text-mist">
+          {line.name} · {line.time}
+        </span>
+        <p className="max-w-[88%] rounded-2xl rounded-tr-md bg-ink-3 px-4 py-2.5 text-[15px] leading-7">{line.text}</p>
+      </Reveal>
+    );
+  }
+  if (line.who === "recalled") {
+    return (
+      <Reveal delay={index * 40} className="flex flex-col items-end gap-1.5">
+        <span className="font-mono text-[11px] text-mist">
+          {line.name} · {line.time}
+        </span>
+        <p className="text-sm italic text-mist/70">此消息已撤回</p>
+      </Reveal>
+    );
+  }
+  return (
+    <Reveal delay={index * 40} className="flex items-start gap-3">
+      <img src={avatar} alt="" width={28} height={28} className="mt-1 size-7 shrink-0 rounded-full object-cover" />
+      <div className="flex flex-col gap-1.5">
+        <span className="font-mono text-[11px] text-tide">星潮</span>
+        <p className="max-w-[88%] rounded-2xl rounded-tl-md border border-line px-4 py-2.5 text-[15px] leading-7">
+          {line.text}
+          {"note" in line && line.note ? (
+            <span className="mt-1 block font-mono text-xs text-mist">{line.note}</span>
+          ) : null}
+        </p>
+      </div>
+    </Reveal>
+  );
+}
+
+function Talk() {
+  return (
+    <section id="talk" className="scroll-mt-16 border-t border-line py-28 lg:py-40">
+      <div className="shell grid gap-10 lg:grid-cols-[14rem_1fr_1.1fr] lg:gap-12">
+        <p className="label pt-3">对话</p>
+        <div className="min-w-0 max-w-md">
+          <h2 className="section-title text-[clamp(2rem,3.5vw,2.9rem)]">
+            像聊天一样使用，
+            <br />
+            也受规矩约束。
+          </h2>
+          <p className="prose-quiet mt-6 text-[15px]">
+            以 <code className="text-pearl">/</code> 开头是指令，@ 或叫她的名字就是闲聊。超管指令只有授权账号能用，处罚有迹可查，也有申诉的出口。
+          </p>
+          <p className="mt-10 font-mono text-xs text-mist">示意对话，数据为虚构。</p>
+        </div>
+        <div className="min-w-0 rounded-3xl border border-line bg-ink-2/60 p-5 sm:p-7" role="log" aria-label="群聊示意对话">
+          <div className="mb-6 flex items-center justify-between border-b border-line pb-4">
+            <span className="text-sm font-medium">星潮体验群</span>
+            <span className="font-mono text-[11px] text-mist">示意</span>
+          </div>
+          <div className="flex flex-col gap-5">
+            {transcript.map((line, i) => (
+              <Message key={i} line={line} index={i} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CopyBlock({ code }: { code: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      /* 剪贴板不可用时静默，用户仍可手动选择 */
+    }
+  };
+  return (
+    <div className="overflow-hidden rounded-2xl border border-line bg-ink-2">
+      <div className="flex items-center justify-between border-b border-line px-5 py-3">
+        <span className="font-mono text-xs text-mist">.env</span>
+        <button
+          type="button"
+          onClick={copy}
+          className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs text-mist transition-colors hover:text-pearl active:scale-[0.96]"
+          aria-label="复制环境变量示例"
+        >
+          {copied ? <Check className="size-3.5 text-tide" /> : <Copy className="size-3.5" />}
+          {copied ? "已复制" : "复制"}
+        </button>
+      </div>
+      <pre className="overflow-x-auto p-5 text-[13px] leading-7 text-pearl/90">
+        <code>{envExample}</code>
+      </pre>
+    </div>
+  );
+}
+
+function Deploy() {
+  return (
+    <section id="deploy" className="scroll-mt-16 border-t border-line py-28 lg:py-40">
+      <div className="shell">
+        <SectionHead label="部署">四步，一台 1 核 1G 的服务器。</SectionHead>
+        <div className="mt-16 grid gap-12 lg:ml-[calc(14rem+3rem)] lg:grid-cols-[1fr_1.15fr] lg:gap-16">
+          <div className="min-w-0">
+            <p className="font-mono text-sm leading-8 text-mist">
+              <span className="text-pearl">QQ 群</span> → NapCat → <span className="text-pearl">星潮 Bot</span> → SQLite
+            </p>
+            <ol className="mt-10 border-l border-line">
+              {steps.map(([title, text], i) => (
+                <li key={title} className="relative pb-9 pl-8 last:pb-0">
+                  <span className="absolute -left-[5px] top-[9px] size-[9px] rounded-full bg-ink ring-1 ring-tide" aria-hidden="true" />
+                  <p className="font-mono text-[11px] text-mist">STEP {i + 1}</p>
+                  <h3 className="mt-1 font-serif text-lg font-semibold">{title}</h3>
+                  <p className="mt-1.5 text-[15px] leading-7 text-mist">{text}</p>
+                </li>
+              ))}
+            </ol>
+            <a
+              href={`${github}/blob/main/docs/DEPLOYMENT.md`}
+              target="_blank"
+              rel="noreferrer"
+              className="link-sweep mt-10 inline-flex items-center gap-1.5 text-[15px]"
+            >
+              完整部署文档 <ArrowUpRight className="size-4" />
+            </a>
+          </div>
+          <div className="min-w-0 self-start">
+            <CopyBlock code={envExample} />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Faq() {
+  return (
+    <section id="faq" className="scroll-mt-16 border-t border-line py-28 lg:py-40">
+      <div className="shell">
+        <SectionHead label="问答">你可能想先知道的。</SectionHead>
+        <div className="mt-16 lg:ml-[calc(14rem+3rem)]">
+          <Accordion>
+            {faqs.map(({ q, a }) => (
+              <AccordionItem key={q} value={q} className="border-line">
+                <AccordionTrigger className="py-6 font-serif text-lg font-semibold tracking-tight hover:text-tide">
+                  {q}
+                </AccordionTrigger>
+                <AccordionPanel className="max-w-2xl text-[15px] leading-8 text-mist">{a}</AccordionPanel>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Closing() {
+  return (
+    <section className="relative isolate overflow-hidden border-t border-line py-32 lg:py-44">
+      <TideCanvas
+        variant="footer"
+        className="absolute inset-x-0 bottom-0 -z-10 h-[70%] w-full [mask-image:linear-gradient(to_bottom,transparent,#000_60%)]"
+      />
+      <div className="shell">
+        <h2 className="display text-[clamp(2.6rem,7vw,6rem)]">让星潮加入你的群。</h2>
+        <p className="prose-quiet mt-6 max-w-lg text-base">Apache-2.0 开源，自己部署，自己修改。想先看看她的样子，可以扫码进体验群。</p>
+        <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <a
+            href={`${github}#快速开始`}
+            target="_blank"
+            rel="noreferrer"
+            className="group inline-flex h-12 items-center gap-2 rounded-full bg-pearl px-6 text-[15px] font-medium text-ink transition-[transform,background-color] duration-200 hover:bg-white active:scale-[0.97]"
+          >
+            开始部署
+            <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+          </a>
+          <a href={github} target="_blank" rel="noreferrer" className="link-sweep inline-flex items-center gap-1.5 text-[15px]">
+            GitHub <ArrowUpRight className="size-4" />
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="border-t border-line py-10">
+      <div className="shell flex flex-col gap-6 text-xs text-mist sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <img src={avatar} alt="" width={28} height={28} className="size-7 rounded-full object-cover" />
+          <p className="max-w-md leading-6">
+            基于 NapCat、OneBot v11 与 NoneBot2 构建，与腾讯官方开放平台无关。
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+          <a className="link-sweep hover:text-pearl" href={github} target="_blank" rel="noreferrer">GitHub</a>
+          <a className="link-sweep hover:text-pearl" href={`${github}/blob/main/LICENSE`} target="_blank" rel="noreferrer">Apache-2.0</a>
+          <a className="link-sweep hover:text-pearl" href="/updates">更新</a>
+          <span>© 2026 Xingchao · <a className="link-sweep hover:text-pearl" href="https://xuyi.dev" target="_blank" rel="noreferrer">xuyi</a></span>
+        </div>
+      </div>
+    </footer>
   );
 }
 
@@ -292,309 +454,19 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="landing min-h-screen overflow-hidden bg-[#fffafb] text-[#312a3c] selection:bg-fuchsia-200/70">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-
-      <header className="fixed left-1/2 top-3 z-50 -translate-x-1/2">
-        <div className="flex w-max max-w-[calc(100vw-1rem)] items-center gap-1.5 rounded-full border border-black/8 bg-white/80 p-1.5 shadow-[0_8px_30px_rgba(49,39,73,.12)] backdrop-blur-xl">
-          <a href="/" aria-label="星潮首页" className="size-8 overflow-hidden rounded-full">
-            <img src={character} alt="" className="size-full scale-150 object-cover object-center" />
-          </a>
-          <span className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
-          <nav className="hidden items-center gap-1 md:flex" aria-label="主导航">
-            <a className="rounded-full bg-secondary px-3 py-1.5 text-xs font-medium text-foreground" href="#features" aria-current="location">能力</a>
-            <a className="rounded-full px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground" href="/updates">更新</a>
-            <a className="rounded-full px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground" href="#demo">演示</a>
-            <a className="rounded-full px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground" href="#safety">边界</a>
-            <a className="rounded-full px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground" href="#deploy">部署</a>
-            <a className="rounded-full px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground" href="#faq">问答</a>
-          </nav>
-          <JoinGroupExperience />
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-ink text-pearl">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <Nav />
       <main>
-        <section className="relative isolate pt-18">
-          <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
-            <div className="absolute -left-24 top-24 size-80 rounded-full bg-rose-200/35 blur-3xl" />
-            <div className="absolute right-[-8rem] top-8 size-[32rem] rounded-full bg-violet-200/35 blur-3xl" />
-            <div className="absolute bottom-0 left-1/3 size-80 rounded-full bg-cyan-100/45 blur-3xl" />
-          </div>
-
-          <div className="mx-auto grid min-h-[calc(100svh-4.5rem)] max-w-7xl items-center gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[.92fr_1.08fr] lg:gap-16 lg:py-20">
-            <div className="relative z-10 max-w-2xl">
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-fuchsia-200/70 bg-white/70 px-3.5 py-1.5 text-xs font-medium text-[#8a5aa0] shadow-sm backdrop-blur">
-                <span className="size-1.5 rounded-full bg-cyan-400 shadow-[0_0_0_4px_rgba(34,211,238,.12)]" />
-                开源 · 自托管 · 懂分寸的 QQ 群助手
-              </div>
-              <h1 className="text-[clamp(2.65rem,6vw,5.5rem)] font-semibold leading-[.94] tracking-[-.065em] text-[#2d2540]">
-                <span className="whitespace-nowrap">群聊有潮汐，<span className="bg-gradient-to-r from-[#eb75a8] to-[#a46bd8] bg-clip-text text-transparent">她</span></span>
-                <span className="mt-2 block bg-gradient-to-r from-[#dc6da1] via-[#a46bd8] to-[#55b8ce] bg-clip-text text-transparent">懂得分寸。</span>
-              </h1>
-              <p className="mt-7 max-w-xl text-base leading-8 text-[#746a82] sm:text-lg">
-                星潮把关键词回复、群管理、活跃统计与 AI 问答放进一个温柔可靠的助手里。
-                只服务你允许的群，只在被需要时回应。
-              </p>
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <Button
-                  render={<a href={`${github}#快速开始`} target="_blank" rel="noreferrer" />}
-                  size="xl"
-                  className="w-full sm:w-auto"
-                >
-                  开始部署 <ArrowRight className="size-4" />
-                </Button>
-                <Button
-                  render={<a href={github} target="_blank" rel="noreferrer" />}
-                  variant="outline"
-                  size="xl"
-                  className="w-full sm:w-auto"
-                >
-                  <GitFork className="size-4" /> 查看源码
-                </Button>
-              </div>
-              <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-xs text-[#8c8198]">
-                {["白名单安全默认", "数据留在本地", "Docker Compose 部署"].map((item) => (
-                  <span key={item} className="flex items-center gap-1.5">
-                    <Check className="size-3.5 text-[#58aebd]" /> {item}
-                  </span>
-                ))}
-              </div>
-              <dl className="mt-10 grid max-w-md grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4 sm:max-w-none">
-                {heroStats.map(({ value, label }) => (
-                  <div key={label}>
-                    <dt className="sr-only">{label}</dt>
-                    <dd className="text-lg font-semibold tracking-tight text-[#2d2540]">{value}</dd>
-                    <dd className="mt-0.5 text-xs text-[#8c8198]">{label}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-
-            <div className="relative mx-auto flex min-h-[590px] w-full max-w-[620px] items-end justify-center lg:mr-[-2rem] lg:min-h-[720px]">
-              <img
-                src={characterWelcome}
-                width={940}
-                height={1672}
-                alt="星潮挥手欢迎，身穿白蓝配色的全身制服"
-                fetchPriority="high"
-                className="relative z-10 max-h-[650px] w-auto max-w-full object-contain drop-shadow-[0_24px_28px_rgba(70,45,100,.22)] lg:max-h-[720px]"
-              />
-              <div className="absolute right-0 top-32 z-20 hidden rounded-2xl bg-white/85 px-4 py-3 shadow-[0_0_0_1px_rgba(0,0,0,.05),0_10px_30px_rgba(82,60,110,.12)] backdrop-blur-xl sm:block">
-                <p className="flex items-center gap-2 text-xs font-semibold text-[#43364f]"><Sparkles className="size-3.5 text-[#a46bd8]" /> 只在被需要时出现</p>
-                <p className="mt-1 text-[11px] text-[#82748d]">@她，或者轻声说一句“星潮”</p>
-              </div>
-              <div className="absolute bottom-16 left-0 z-20 rounded-2xl bg-white/88 px-4 py-3 shadow-[0_0_0_1px_rgba(0,0,0,.05),0_10px_30px_rgba(82,60,110,.12)] backdrop-blur-xl">
-                <p className="flex items-center gap-2 text-xs font-semibold text-[#43364f]"><ShieldCheck className="size-3.5 text-[#58aebd]" /> 白名单已启用</p>
-                <p className="mt-1 text-[11px] text-[#82748d]">默认拒绝，按需开放</p>
-              </div>
-            </div>
-          </div>
-          <TideDivider />
-        </section>
-
-        <div className="bg-background text-foreground">
-          <section id="features" className="scroll-mt-24 border-t px-5 py-20 sm:px-8 lg:py-24">
-            <div className="mx-auto max-w-7xl">
-              <div className="max-w-2xl">
-                <AnimeKicker><Badge variant="outline">核心能力</Badge></AnimeKicker>
-                <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">群聊里常用的事，集中处理。</h2>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">回复、群务、AI 与统计使用同一套配置，每个模块、每个群都可以独立开关。</p>
-              </div>
-              <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {features.map(({ icon: Icon, eyebrow, title, description, tags }) => (
-                  <Card key={title} className="anime-feature-card h-full">
-                    <CardHeader>
-                      <CardTitle>{title}</CardTitle>
-                      <CardDescription className="leading-6">{description}</CardDescription>
-                      <CardAction><Icon className="size-4 text-muted-foreground" /></CardAction>
-                    </CardHeader>
-                    <CardFooter className="flex-wrap gap-1.5">
-                      <span className="anime-bow-tag">{eyebrow}</span>
-                      {tags.map((tag) => (
-                        <span key={tag} className="text-xs text-muted-foreground">{tag}</span>
-                      ))}
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section id="demo" className="scroll-mt-24 px-5 pb-20 sm:px-8 lg:pb-24">
-            <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">
-              <div className="max-w-xl">
-                <AnimeKicker><Badge variant="outline">上手演示</Badge></AnimeKicker>
-                <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">像聊天一样下指令。</h2>
-                <p className="mt-4 text-sm leading-7 text-muted-foreground">
-                  不用记复杂语法：以 <code className="rounded bg-muted px-1.5 py-0.5 text-xs">/</code> 开头是指令，
-                  @ 或昵称唤起可以闲聊。超管指令只有授权账号可用，普通成员无法越权。
-                  所有触发、回复都记录在本地日志里，随时回查。
-                </p>
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {["/help", "/stats", "/trending", "/mute", "/task", "/ai"].map((cmd) => (
-                    <code key={cmd} className="rounded-md border bg-muted/60 px-2.5 py-1 text-xs font-medium text-foreground">{cmd}</code>
-                  ))}
-                </div>
-              </div>
-              <ChatDemo />
-            </div>
-          </section>
-
-          <section id="safety" className="scroll-mt-24 border-y bg-muted/40 px-5 py-20 sm:px-8 lg:py-24">
-            <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.8fr_1.2fr] lg:items-center">
-              <div className="max-w-xl">
-                <AnimeKicker><Badge variant="success"><ShieldCheck /> 安全默认</Badge></AnimeKicker>
-                <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">默认拒绝，再按需开放。</h2>
-                <p className="mt-4 text-sm leading-7 text-muted-foreground">空白名单不会处理任何群。面板、NapCat WebUI 与机器人端口默认只对本机开放，敏感操作仅允许授权账号执行。</p>
-              </div>
-              <Card>
-                <CardHeader className="border-b">
-                  <CardTitle>安全策略</CardTitle>
-                  <CardDescription>当前项目的默认保护规则</CardDescription>
-                  <CardAction><Badge variant="success">已启用</Badge></CardAction>
-                </CardHeader>
-                <CardPanel className="divide-y py-0">
-                  {safetyPolicies.map(([Icon, title, text, code]) => (
-                    <div key={title} className="flex items-start gap-3 py-4">
-                      <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium">{title}</p>
-                        <p className="mt-1 text-xs text-muted-foreground">{text}</p>
-                      </div>
-                      <code className="hidden text-xs text-muted-foreground sm:block">{code}</code>
-                    </div>
-                  ))}
-                </CardPanel>
-              </Card>
-            </div>
-          </section>
-
-          <section id="deploy" className="scroll-mt-24 px-5 py-20 sm:px-8 lg:py-24">
-            <div className="mx-auto max-w-5xl">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <AnimeKicker><Badge variant="outline">自托管部署</Badge></AnimeKicker>
-                  <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">四步启动星潮。</h2>
-                  <p className="mt-3 text-sm text-muted-foreground">Docker Compose 同时运行 NoneBot2 与 NapCat，数据全部留在本机。</p>
-                </div>
-                <Button render={<a href={`${github}/blob/main/docs/DEPLOYMENT.md`} target="_blank" rel="noreferrer" />} variant="outline">
-                  完整部署文档 <ArrowRight />
-                </Button>
-              </div>
-
-              <div className="mt-8">
-                <ArchitectureDiagram />
-              </div>
-
-              <div className="mt-4 grid gap-4 lg:grid-cols-2">
-                <Card>
-                  <CardPanel className="p-0">
-                    <ol className="divide-y">
-                      {deploySteps.map(([n, title, text]) => (
-                        <li key={n} className="grid gap-3 p-5 sm:grid-cols-[auto_1fr] sm:items-center sm:gap-5 sm:px-6">
-                          <Badge variant="secondary" className="justify-self-start">{n}</Badge>
-                          <div>
-                            <h3 className="text-sm font-medium">{title}</h3>
-                            <p className="mt-1 text-xs leading-5 text-muted-foreground">{text}</p>
-                          </div>
-                        </li>
-                      ))}
-                    </ol>
-                  </CardPanel>
-                </Card>
-                <Card className="overflow-hidden">
-                  <CardHeader className="border-b">
-                    <CardTitle>.env 最小配置</CardTitle>
-                    <CardDescription>复制 .env.example 后按需填写</CardDescription>
-                    <CardAction><Sparkles className="size-4 text-muted-foreground" /></CardAction>
-                  </CardHeader>
-                  <CardPanel className="p-0">
-                    <pre className="overflow-x-auto bg-[#221c2e] p-5 text-xs leading-6 text-[#d8cfe6]">
-                      <code>{envExample}</code>
-                    </pre>
-                  </CardPanel>
-                </Card>
-              </div>
-            </div>
-          </section>
-
-          <section id="faq" className="scroll-mt-24 border-y px-5 py-20 sm:px-8 lg:py-24">
-            <h2 className="sr-only">常见问题</h2>
-            <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[.72fr_1.28fr] lg:items-stretch">
-              <div className="flex min-h-[420px] items-end justify-center lg:min-h-[500px]">
-                <img
-                  src={characterThinking}
-                  width={805}
-                  height={1953}
-                  alt="星潮正在思考常见问题"
-                  loading="lazy"
-                  className="max-h-[420px] w-auto max-w-full object-contain drop-shadow-[0_18px_24px_rgba(70,45,100,.18)] lg:max-h-[500px]"
-                />
-              </div>
-              <Card>
-                <CardPanel className="py-0">
-                  <Accordion>
-                    {faqs.map(({ q, a }) => (
-                      <AccordionItem key={q} value={q}>
-                        <AccordionTrigger>{q}</AccordionTrigger>
-                        <AccordionPanel className="leading-6">{a}</AccordionPanel>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </CardPanel>
-              </Card>
-            </div>
-          </section>
-
-          <section className="px-5 py-12 sm:px-8 lg:py-16">
-            <Card className="mx-auto max-w-7xl">
-              <CardPanel className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <CardTitle>让星潮加入你的群</CardTitle>
-                  <CardDescription className="mt-2">Apache-2.0 协议开源，可自行部署、修改和扩展。</CardDescription>
-                </div>
-                <div className="flex flex-col gap-2 sm:flex-row">
-                  <Button render={<a href={`${github}#快速开始`} target="_blank" rel="noreferrer" />}>
-                    开始部署 <ArrowRight />
-                  </Button>
-                  <Button render={<a href={github} target="_blank" rel="noreferrer" />} variant="outline">
-                    <GitFork /> GitHub
-                  </Button>
-                </div>
-              </CardPanel>
-            </Card>
-          </section>
-        </div>
+        <Hero />
+        <Principles />
+        <Capabilities />
+        <Talk />
+        <Deploy />
+        <Faq />
+        <Closing />
       </main>
-
-      <footer className="border-t bg-background px-5 pb-10 pt-8 sm:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <Brand />
-              <p className="mt-4 max-w-sm text-xs leading-6 text-muted-foreground">基于 NapCat、OneBot v11 与 NoneBot2 构建的开源 QQ 群助手。与腾讯官方开放平台无关。</p>
-            </div>
-            <div className="flex items-center gap-5 text-xs text-muted-foreground">
-              <a className="flex items-center gap-1.5 hover:text-foreground" href={github} target="_blank" rel="noreferrer">
-                <GitFork className="size-3.5" /> GitHub
-              </a>
-              <a className="hover:text-foreground" href={`${github}/blob/main/LICENSE`} target="_blank" rel="noreferrer">Apache-2.0 License</a>
-              <a className="hover:text-foreground" href={JOIN_GROUP_URL} target="_blank" rel="noreferrer">入群体验</a>
-            </div>
-          </div>
-          <div className="mt-8 flex flex-wrap items-center gap-2 border-t pt-5 text-xs text-muted-foreground">
-            <a href={github} target="_blank" rel="noreferrer" aria-label="星潮 GitHub 仓库" className="hover:text-foreground">
-              <GitFork className="size-3.5" />
-            </a>
-            <span>© 2026 Xingchao</span>
-            <span aria-hidden="true">·</span>
-            <span>Made with love by <a href="https://xuyi.dev" target="_blank" rel="noreferrer" className="text-foreground underline-offset-4 hover:underline">xuyi</a></span>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

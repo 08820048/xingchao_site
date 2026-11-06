@@ -175,19 +175,19 @@ export function JoinGroupExperience() {
 
   return (
     <>
-      <Button
-        size="sm"
-        className="rounded-full px-3 transition-[scale,box-shadow] duration-150 ease-out active:scale-[0.96]"
+      <button
+        type="button"
+        className="inline-flex h-9 items-center rounded-full border border-line bg-ink/40 px-4 text-sm text-pearl backdrop-blur transition-[transform,border-color,background-color] duration-200 hover:border-tide/60 hover:bg-tide/10 active:scale-[0.96]"
         aria-haspopup="dialog"
         onClick={open}
       >
         入群体验
-      </Button>
+      </button>
 
       <dialog
         ref={dialogRef}
         aria-labelledby="join-group-title"
-        className="m-auto max-h-[calc(100dvh-1rem)] w-[min(calc(100%-1rem),36rem)] max-w-none overflow-y-auto rounded-[2rem] bg-transparent p-2 text-[#312a3c] backdrop:bg-[#241c30]/35 backdrop:backdrop-blur-sm"
+        className="m-auto max-h-[calc(100dvh-1rem)] w-[min(calc(100%-1rem),34rem)] max-w-none overflow-y-auto rounded-[2rem] bg-transparent p-2 text-pearl backdrop:bg-ink/70 backdrop:backdrop-blur-md"
         onCancel={(event) => {
           event.preventDefault();
           close();
@@ -196,19 +196,19 @@ export function JoinGroupExperience() {
           if (event.target === event.currentTarget) close();
         }}
       >
-        <div className="rounded-3xl bg-white px-4 pb-4 pt-5 shadow-[0_24px_90px_rgba(42,28,57,.24)] sm:px-6 sm:pb-6">
+        <div className="rounded-3xl border border-line bg-ink-2 px-4 pb-4 pt-5 shadow-[0_24px_90px_rgba(0,0,0,.5)] sm:px-6 sm:pb-6">
           <div className="flex items-start justify-between gap-4 px-1">
             <div>
-              <p className="text-xs font-semibold tracking-[.18em] text-[#9a6caf]">XINGCHAO GROUP</p>
-              <h2 id="join-group-title" className="mt-2 text-balance text-xl font-semibold tracking-tight sm:text-2xl">
+              <p className="label">Xingchao Group</p>
+              <h2 id="join-group-title" className="section-title mt-2 text-xl sm:text-2xl">
                 扫码加入「星潮酱体验群」
               </h2>
-              <p className="mt-2 text-pretty text-sm text-muted-foreground">二维码正在抵达。也可以直接点击下方链接唤起 QQ。</p>
+              <p className="prose-quiet mt-2 text-sm">用 QQ 扫码，或点下方链接直接唤起 QQ。</p>
             </div>
             <Button
               variant="ghost"
               size="icon-lg"
-              className="size-10 rounded-full transition-transform duration-150 ease-out active:scale-[0.96]"
+              className="size-10 rounded-full text-pearl transition-transform duration-150 ease-out active:scale-[0.96]"
               aria-label="关闭入群二维码"
               onClick={close}
             >
@@ -216,7 +216,7 @@ export function JoinGroupExperience() {
             </Button>
           </div>
 
-          <div className="mt-5 overflow-hidden rounded-2xl bg-[#fcfcfc] shadow-[inset_0_0_0_1px_rgba(0,0,0,.06)]">
+          <div className="mt-5 overflow-hidden rounded-2xl bg-[#fcfcfc]">
             <canvas
               ref={canvasRef}
               width={STAGE}
@@ -228,12 +228,14 @@ export function JoinGroupExperience() {
           </div>
 
           <div className="mt-4 flex justify-center">
-            <Button
-              render={<a href={JOIN_GROUP_URL} target="_blank" rel="noreferrer" />}
-              className="transition-[scale,box-shadow] duration-150 ease-out active:scale-[0.96]"
+            <a
+              href={JOIN_GROUP_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-11 items-center rounded-full bg-pearl px-6 text-sm font-medium text-ink transition-[transform,background-color] duration-150 hover:bg-white active:scale-[0.96]"
             >
               点击链接加入群聊
-            </Button>
+            </a>
           </div>
         </div>
       </dialog>

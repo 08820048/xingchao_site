@@ -1,50 +1,44 @@
 import { useEffect, useState } from "react";
-import { ArrowUpRight, GitCommitHorizontal } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
-import { Badge, type BadgeProps } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { parseGitHubCommits, projectUpdates, type ProjectUpdate, type UpdateKind } from "@/lib/github-updates";
 
 const commitsUrl = "https://github.com/08820048/xingchao/commits/main";
-const apiUrl = "https://api.github.com/repos/08820048/xingchao/commits?per_page=6";
+const apiUrl = "https://api.github.com/repos/08820048/xingchao/commits?per_page=12";
 const dateFormatter = new Intl.DateTimeFormat("zh-CN", {
   year: "numeric",
-  month: "short",
-  day: "numeric",
+  month: "2-digit",
+  day: "2-digit",
   timeZone: "Asia/Shanghai",
 });
 
-const kinds: Record<UpdateKind, { label: string; variant: BadgeProps["variant"] }> = {
-  feature: { label: "新功能", variant: "success" },
-  fix: { label: "修复", variant: "error" },
-  improvement: { label: "优化", variant: "info" },
-  docs: { label: "文档", variant: "secondary" },
-  maintenance: { label: "维护", variant: "outline" },
-  update: { label: "更新", variant: "warning" },
+const kinds: Record<UpdateKind, { label: string; accent: boolean }> = {
+  feature: { label: "新功能", accent: true },
+  fix: { label: "修复", accent: false },
+  improvement: { label: "优化", accent: false },
+  docs: { label: "文档", accent: false },
+  maintenance: { label: "维护", accent: false },
+  update: { label: "更新", accent: false },
 };
 
 function UpdateRow({ update }: { update: ProjectUpdate }) {
   const category = kinds[update.kind];
 
   return (
-    <li className="relative grid gap-3 border-b py-6 pl-7 sm:grid-cols-[8rem_1fr_auto] sm:items-start sm:gap-6 sm:pl-8">
-      <span className="absolute left-0 top-8 size-2.5 rounded-full bg-foreground ring-4 ring-background" aria-hidden="true" />
-      <time className="tabular-nums text-sm text-muted-foreground" dateTime={update.date}>
-        {dateFormatter.format(new Date(update.date))}
+    <li className="index-row grid gap-x-8 gap-y-1.5 border-b border-line py-6 md:grid-cols-[9rem_6rem_1fr_auto] md:items-baseline">
+      <time className="font-mono text-xs tabular-nums text-mist" dateTime={update.date}>
+        {dateFormatter.format(new Date(update.date)).replaceAll("/", ".")}
       </time>
-      <div className="min-w-0">
-        <Badge variant={category.variant}>{category.label}</Badge>
-        <h2 className="mt-2 text-pretty text-base font-medium leading-7 sm:text-lg">{update.title}</h2>
-      </div>
+      <span className={`font-mono text-xs ${category.accent ? "text-tide" : "text-mist"}`}>{category.label}</span>
+      <h2 className="index-name text-pretty font-serif text-lg font-semibold leading-8 tracking-tight">{update.title}</h2>
       <a
         href={update.url}
         target="_blank"
         rel="noreferrer"
-        className="flex min-h-10 items-center gap-1.5 self-center rounded-md text-xs text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+        className="link-sweep inline-flex w-fit items-center gap-1 font-mono text-xs text-mist hover:text-pearl"
         aria-label={`查看提交 ${update.sha}`}
       >
-        <GitCommitHorizontal className="size-3.5" />
-        <code>{update.sha}</code>
+        {update.sha}
         <ArrowUpRight className="size-3.5" />
       </a>
     </li>
@@ -72,22 +66,26 @@ export function ProjectUpdates() {
   }, []);
 
   return (
-    <section id="updates" className="px-5 py-16 sm:px-8 lg:py-24">
-      <div className="mx-auto max-w-5xl">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-          <div className="max-w-2xl">
-            <Badge variant="outline">项目更新</Badge>
-            <h2 className="mt-4 text-balance text-3xl font-semibold tracking-tight sm:text-4xl">每一次变化，都有迹可循。</h2>
-            <p className="mt-3 text-pretty text-sm leading-6 text-muted-foreground">从 GitHub 实时读取最近提交，并按新功能、修复与优化自动归类。</p>
-          </div>
-          <Button render={<a href={commitsUrl} target="_blank" rel="noreferrer" />} variant="outline">
-            查看全部更新 <ArrowUpRight />
-          </Button>
-        </div>
+    <section id="updates" className="pb-28 pt-20 lg:pt-32">
+      <div className="shell">
+        <p className="label">更新</p>
+        <h1 className="display mt-6 text-[clamp(2.8rem,8vw,6.5rem)]">每一次变化，都有迹可循。</h1>
+        <p className="prose-quiet mt-6 max-w-xl text-base">
+          直接读取 GitHub 上最近的提交，按新功能、修复与优化归类。
+        </p>
 
-        <ol className="relative mt-10 border-t before:absolute before:bottom-0 before:left-[4px] before:top-0 before:w-px before:bg-border">
+        <ol className="mt-16 border-t border-line">
           {updates.map((update) => <UpdateRow key={update.sha} update={update} />)}
         </ol>
+
+        <a
+          href={commitsUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="link-sweep mt-10 inline-flex items-center gap-1.5 text-[15px]"
+        >
+          查看全部提交 <ArrowUpRight className="size-4" />
+        </a>
       </div>
     </section>
   );
